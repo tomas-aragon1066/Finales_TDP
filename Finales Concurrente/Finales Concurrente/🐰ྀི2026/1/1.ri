@@ -1,0 +1,144 @@
+{Aquí tienes la transcripción completa del texto de la imagen, respetando el formato original y la puntuación:
+
+---
+
+**Final Taller de Programación - Módulo Concurrente**
+**23/06/2026**
+
+Realice un programa formado por 4 robots corredores y un jefe.
+
+Los corredores deben *colaborar* para juntar todos los papeles que existen en la esquina (5,5). Para eso, cada corredor toma de a un papel por vez.
+
+Apenas cada corredor detecta que en la esquina (5,5) no hay más papeles, comenzará a recorrer su avenida juntando todas las flores. Este recorrido termina al llegar a calle 10.
+
+Para finalizar, el jefe debe informar: el robot que juntó más papeles de la esquina (5,5) y el robot que juntó más flores en su recorrido.
+
+El jefe de inicia en (1,1).
+El corredor 1 inicia (8,1) y recorre la avenida 8.
+El corredor 2 inicia (10,1) y recorre la avenida 10.
+El corredor 3 inicia (12,1) y recorre la avenida 12.
+El corredor 4 inicia (14,1) y recorre la avenida 14.}
+
+programa ejemplo
+procesos
+  proceso juntarPapel(ES p: numero; ES hayPapel : boolean)
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(5, 5)
+    Pos(5, 5)
+    si HayPapelEnLaEsquina
+      tomarPapel
+      p := p + 1
+    sino
+      hayPapel := F
+    Pos(miAv, miCa)
+    LiberarEsquina(5, 5)
+  fin
+  proceso juntarFlores(ES f: numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f := f + 1
+        
+  fin
+  
+  proceso evaluar(E id: numero; ES v: numero)
+  comenzar
+    si id = 1
+      RecibirMensaje(v, r1)
+    sino 
+      si id = 2
+        RecibirMensaje(v, r2)
+      sino
+        si id = 3
+          RecibirMensaje(v, r3)
+        sino
+          RecibirMensaje(v, r4)
+     
+  fin
+  
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+    EnviarMensaje(4, r4)
+  
+  fin
+  
+  
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot corredor
+  variables
+    p, f: numero
+    hayPapel: boolean
+    id: numero
+  comenzar
+    RecibirMensaje(id, j)
+    
+    p := 0
+    hayPapel := V
+    mientras hayPapel
+      juntarPapel(p, hayPapel)
+    
+    EnviarMensaje(id, j)
+    EnviarMensaje(p, j)
+    
+    f := 0
+    repetir 9
+      juntarFlores(f)
+      mover
+    juntarFlores(f)
+    EnviarMensaje(id, j)
+    EnviarMensaje(f, j)    
+  fin
+  robot jefe
+  variables
+    f, p, maxP, maxF: numero
+    idMaxP, idMaxF: numero
+    id: numero
+  comenzar
+    enviarIDs
+    
+    maxP := -1
+    repetir 4
+      RecibirMensaje(id, *)
+      evaluar(id, p)
+      si p > maxP 
+        idMaxP := id
+        maxP := p
+        
+    maxF := -1
+    repetir 4
+      RecibirMensaje(id, *)
+      evaluar(id, f)
+      si f > maxF
+        idMaxF := id
+        maxF := f
+    Informar(idMaxP)
+    Informar(idMaxF)    
+    
+      
+  
+  fin
+variables
+  r1, r2, r3, r4: corredor
+  j: jefe
+comenzar
+  AsignarArea(r1, ciudad)
+  AsignarArea(r2, ciudad)
+  AsignarArea(r3, ciudad)
+  AsignarArea(r4, ciudad)
+  AsignarArea(j, ciudad)
+  Iniciar(j, 1,1)
+  Iniciar(r1, 8,1)
+  Iniciar(r2, 10,1)
+  Iniciar(r3, 12,1)
+  Iniciar(r4, 14,1)
+fin

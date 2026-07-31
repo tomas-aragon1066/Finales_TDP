@@ -1,0 +1,123 @@
+{Aquí tienes la transcripción completa del texto de la imagen, respetando el formato original:
+
+---
+
+**Taller de programación –Módulo Concurrente**
+**30-11-2023**
+
+Implemente el siguiente juego: Existe un área compartida delimitada por las esquinas (1,1) (20,20), dos robots jugadores y un robot fiscalizador.
+Ambos robots jugadores juegan simultáneamente y durante el juego tiene cinco intentos para posicionarse en una esquina del área compartida determinada al azar (elegida por el robot fiscalizador), junta todas las flores de esa esquina y vuelve a su esquina original informando al fiscalizador cuántas flores juntó en dicha esquina.
+Cuando los dos robots jugadores finalizan sus cinco intentos, el robot fiscalizador determinará e informará quien es el robot ganador (el que más flores juntó en total).
+El robot perdedor se debe posicionar en la esquina (25,25) y depositar todas las flores juntadas por él.
+**Notas:** Los robots jugadores se posicionan inicialmente en (21,21), (22,22) y el robot fiscalizador en la esquina (23,23)..}
+
+programa ejemplo
+procesos
+  proceso colectar(ES f: numero; E av: numero; E ca: numero)
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    si HayFlorEnLaEsquina
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f := f + 1
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)
+        
+  fin
+  
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+  
+  fin
+  
+  proceso procesar(E id: numero; ES t1: numero; ES t2: numero)
+  variables 
+    f : numero
+  comenzar
+    si id  = 1
+      RecibirMensaje(f, r1)
+      t1 := t1 + f
+    sino
+      si id = 2
+        RecibirMensaje(f, r2)
+        t2 := t2 + f
+  
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot jugador
+  variables
+    id: numero
+    f: numero
+    gane: boolean
+    av, ca: numero
+  comenzar
+    RecibirMensaje(id, j)
+    repetir 5
+      f := 0
+      RecibirMensaje(av, j)
+      RecibirMensaje(ca, j)
+      colectar(f, av, ca)
+      EnviarMensaje(id, j)
+      EnviarMensaje(f, j)
+    
+    RecibirMensaje(gane, j)
+    si ~gane
+      Pos(25, 25)
+      mientras HayFlorEnLaBolsa
+        depositarFlor
+      
+  fin
+  
+  robot jefe
+  variables
+    id: numero
+    t1, t2: numero
+    av, ca: numero
+  comenzar
+    enviarIDs
+    t1 := 0
+    t2 := 0
+    repetir 5
+      Random(av, 1, 20)
+      Random(ca, 1, 20)
+      EnviarMensaje(av, r1)
+      EnviarMensaje(av, r2)
+      EnviarMensaje(ca, r1)
+      EnviarMensaje(ca, r2)
+      
+      RecibirMensaje(id, *)
+      procesar(id, t1, t2)
+      RecibirMensaje(id, *)
+      procesar(id, t1, t2)
+    
+    Informar(t1)
+    Informar(t2)
+    si t1 > t2
+      EnviarMensaje(V, r1)
+      EnviarMensaje(F, r2)
+    sino
+      EnviarMensaje(F, r1)
+      EnviarMensaje(V, r2)
+  fin
+variables
+  r1, r2: jugador
+  j: jefe
+comenzar
+  AsignarArea(r1, ciudad)
+  
+  AsignarArea(r2, ciudad)
+  
+  AsignarArea(j, ciudad)
+  Iniciar(r1, 21,21)
+  Iniciar(r2, 22, 22)
+  Iniciar(j, 23, 23)
+fin

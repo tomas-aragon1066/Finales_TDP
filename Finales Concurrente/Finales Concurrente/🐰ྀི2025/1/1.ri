@@ -1,0 +1,247 @@
+{Aquí tienes la transcripción completa del texto de la imagen:
+
+---
+
+**Final Taller de programación - Módulo Programación Concurrente**
+**16-12-2025**
+
+Cuatro robots deben jugar una carrera en dos etapas (clasificación y final). Los robots comienzan en (1,1), (1,2), (1,3) y (1,4), esquinas en donde aprovechan a vaciar sus bolsas (que podrían estar llenas de flores y papeles). Al finalizar la carrera, los cuatro robots deben volver a su esquina de inicio.
+
+La primera etapa de la carrera (la clasificación) va desde la avenida 2 hasta la avenida 20, cada uno de los robots hará el recorrido sobre la calle en la cual comienza y consiste en lo siguiente:
+a) Todos los robots deben comenzar al mismo tiempo recorriendo su calle juntando solo una flor por esquina (si hubiera).
+b) Al llegar al final del recorrido deberán dejar todas las flores juntadas en (1,6). Las flores deben ser depositadas de a una.
+c) Los dos robots que vacíen primero su bolsa pasan a la final.
+
+Finalizada la primera etapa se da comienzo a la segunda (la final) que va desde la avenida 20 hasta la avenida 2, cada uno de los dos robots finalistas hará el recorrido sobre su misma calle y consiste en lo siguiente:
+a) Ambos finalistas deben comenzar al mismo tiempo recorriendo su calle juntando solo un papel por esquina (si hubiera).
+b) Al llegar al final de la calle deberán dejar todos los papeles juntados en (1,6). Los papeles deben ser depositados de a uno.
+c) El robot que vacíe primero su bolsa es el ganador.
+
+El comienzo de la carrera, la determinación de los finalistas, el comienzo de la segunda etapa y el informar quien es el robot ganador son tareas de un robot fiscalizador que estará ubicado en (1,5).}
+
+programa ejemplo
+procesos
+  proceso vaciarBolsa
+  comenzar
+    mientras HayFlorEnLaBolsa
+      depositarFlor
+    mientras HayPapelEnLaBolsa
+      depositarPapel
+        
+  fin
+  
+  proceso colectarFlor(ES f: numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      tomarFlor
+      f := f + 1
+  
+  fin
+  proceso juntarPapel(ES p: numero)
+  comenzar
+    si HayPapelEnLaEsquina
+      tomarPapel
+      p := p + 1
+  fin
+  
+  proceso dejarPapel
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(1, 6)
+    Pos(1, 6)
+    depositarPapel
+    Pos(miAv, miCa)
+    LiberarEsquina(1, 6)
+    
+  
+  fin
+  
+  proceso depositarFlores
+  variables
+    miAv, miCa: numero
+  
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(1, 6)
+    Pos(1, 6)
+    depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(1, 6)
+  
+  fin
+  
+  proceso evaluar(E id: numero; ES primero: numero; ES segundo: numero)
+  comenzar
+    si (primero = -1)
+      primero := id
+    sino
+      si ((primero <> -1) & (segundo = -1))
+        segundo := id
+  fin
+  
+  proceso enviarFinalistas(E primero: numero; E segundo: numero)
+  comenzar
+    si ((primero = 1) & (segundo = 2))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r2)
+      EnviarMensaje(F, r3)
+      EnviarMensaje(F, r4)
+    si ((primero = 1) & (segundo = 3))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r4)
+    si ((primero = 1) & (segundo = 4))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r4)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r3)
+    si ((primero = 2) & (segundo = 1))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r2)
+      EnviarMensaje(F, r3)
+      EnviarMensaje(F, r4)
+    si ((primero = 2) & (segundo = 3))
+      EnviarMensaje(V, r2)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r1)
+      EnviarMensaje(F, r4)
+    si ((primero = 2) & (segundo = 4))
+      EnviarMensaje(V, r2)
+      EnviarMensaje(V, r4)
+      EnviarMensaje(F, r1)
+      EnviarMensaje(F, r3)
+    si ((primero = 3) & (segundo = 1))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r4)
+    si ((primero = 3) & (segundo = 2))
+      EnviarMensaje(V, r2)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r1)
+      EnviarMensaje(F, r4)
+    si ((primero = 3) & (segundo = 4))
+      EnviarMensaje(V, r4)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r1)
+    si ((primero = 4) & (segundo = 1))
+      EnviarMensaje(V, r1)
+      EnviarMensaje(V, r4)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r3)
+    si ((primero = 4) & (segundo = 2))
+      EnviarMensaje(V, r2)
+      EnviarMensaje(V, r4)
+      EnviarMensaje(F, r1)
+      EnviarMensaje(F, r3)
+    si ((primero = 4) & (segundo = 3))
+      EnviarMensaje(V, r4)
+      EnviarMensaje(V, r3)
+      EnviarMensaje(F, r2)
+      EnviarMensaje(F, r1)
+    
+      
+    
+  fin
+    
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+    EnviarMensaje(4, r4)
+  
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot corredor
+  variables
+    miAv, miCa: numero
+    id: numero
+    soyFinalista : boolean
+    f, p: numero
+  comenzar
+    vaciarBolsa
+    derecha
+    miAv := PosAv
+    miCa := PosCa
+    mover
+    f := 0
+    p := 0
+    RecibirMensaje(id, j)
+    repetir 18
+      colectarFlor(f)
+      mover
+    colectarFlor(f)
+    repetir f
+      depositarFlores
+    
+    EnviarMensaje(id, j)
+    Informar('Envie id ', id)
+    RecibirMensaje(soyFinalista, j)
+    si soyFinalista
+      Informar(soyFinalista)
+      repetir 2
+        derecha
+      repetir 18
+        juntarPapel(p)
+        mover
+      juntarpapel(p)
+      repetir p
+        dejarPapel
+        
+      EnviarMensaje(id, j)
+      
+      
+      
+    Pos(miAv, miCa)
+    
+  fin
+  robot fiscal
+  variables
+    id: numero
+    primero, segundo, finalista: numero
+    hayFinalista: boolean
+  comenzar
+    enviarIDs
+    primero := -1
+    segundo := -1
+    hayFinalista := F
+    repetir 4
+      RecibirMensaje(id, *)
+      evaluar(id, primero, segundo)
+    enviarFinalistas(primero, segundo)
+    
+    repetir 2
+      RecibirMensaje(id, *)
+      si ~hayFinalista
+        hayFinalista := V
+        finalista := id
+    Informar(finalista)
+  fin
+variables
+  r1, r2, r3, r4: corredor
+  j: fiscal
+comenzar
+  AsignarArea(r1, ciudad)
+  
+  AsignarArea(r2, ciudad)
+  
+  AsignarArea(r3, ciudad)
+  
+  AsignarArea(r4, ciudad)
+  AsignarArea(j, ciudad)
+  Iniciar(j, 1, 5)
+  Iniciar(r1, 1,1)
+  
+  Iniciar(r2, 1,2)
+  Iniciar(r3, 1,3)
+  Iniciar(r4, 1,4)
+fin

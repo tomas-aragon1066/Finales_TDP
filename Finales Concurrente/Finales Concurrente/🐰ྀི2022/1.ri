@@ -1,0 +1,232 @@
+{Aquí tienes la transcripción completa del texto de la imagen, respetando el formato y los subrayados manuscritos del documento original:
+
+---
+
+**Taller de programación – Práctico – Tercera fecha**
+**04/07/2022**
+
+Tres robots deben jugar un torneo el cual consiste en tres etapas: 1) recolectar flores; 2) recolectar papeles; 3) depositar todos los objetos recolectados en las etapas anteriores.
+
+Los robots comienzan en (5,4), (6,4) y (7,4). El área de juego para las etapas 1 y 2 es el área (5,5,7,7). El área de juego para la etapa 3 es la esquina (10,10).
+
+Para la etapa 1, cada uno de los robots debe recorrer de manera completa una avenida del área de juego recolectando todas las flores a su paso. Para la etapa 2, cada uno de los robots debe recorrer de manera completa una calle del área de juego recolectando todos los papeles a su paso. <u>Cada robot debe recorrer una avenida y una calle diferente al resto de los robots.</u>
+
+Para la etapa 3, los objetos deben ser depositados de a uno.
+
+En cada etapa, los robots deben comenzar al mismo tiempo. <u>Un robot fiscalizador ubicado en (1,1) informará el robot ganador de cada etapa.</u>.}
+
+programa ejemplo
+procesos
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+  
+  fin
+  
+  proceso colectarFlores(ES f: numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f := f + 1
+  
+  fin
+  
+  proceso recorrerAvenida(E n: numero; ES f: numero)
+  comenzar
+    Pos(n, 5)
+    repetir 2
+      colectarFlores(f)
+      mover
+    colectarFlores(f)
+  fin
+  proceso colectarPapeles(ES p: numero)
+  comenzar
+    si HayPapelEnLaEsquina
+      mientras HayPapelEnLaEsquina
+        tomarPapel
+        p := p + 1
+  fin
+  proceso recorrerCalle(E n: numero; ES p: numero)
+  comenzar
+    derecha
+    Pos(5, n)
+    repetir 2
+      colectarPapeles(p)
+      mover
+    colectarPapeles(p)
+  fin
+  
+  proceso dejarFlor
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    si HayFlorEnLaBolsa
+      depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(10, 10)
+  fin
+  
+
+  proceso dejarPapel
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    si HayPapelEnLaBolsa
+      depositarPapel
+    Pos(miAv, miCa)
+    LiberarEsquina(10, 10)
+  fin
+  proceso procesar(E id: numero; ES idMax: numero; ES max: numero)
+  variables
+    f: numero
+  comenzar
+    si id = 1
+      RecibirMensaje(f, r1)
+    sino
+      si id = 2
+        RecibirMensaje(f, r2)
+      sino
+        RecibirMensaje(f, r3)
+    si f > max 
+      idMax := id
+      max := f
+  
+  fin
+  
+  
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot jugador1
+  variables 
+    f, p: numero
+    id: numero
+  comenzar
+    f := 0
+    RecibirMensaje(id, j)
+    recorrerAvenida(5, f)
+    EnviarMensaje(id, j)
+    EnviarMensaje(f, j)
+    
+    p := 0
+    RecibirMensaje(id, j)
+    recorrerCalle(5, p)
+    EnviarMensaje(id, j)
+    EnviarMensaje(p, j)
+    
+    RecibirMensaje(id, j)
+    mientras HayPapelEnLaBolsa
+      dejarPapel
+      
+    mientras HayFlorEnLaBolsa
+      dejarFlor
+    EnviarMensaje(id, j)
+    
+  fin
+  robot jugador2
+  variables 
+    f, p: numero
+    id: numero
+  comenzar
+    f := 0
+    RecibirMensaje(id, j)
+    recorrerAvenida(6, f)
+    EnviarMensaje(id, j)
+    EnviarMensaje(f, j)
+    
+    p := 0
+    RecibirMensaje(id, j)
+    recorrerCalle(6, p)
+    EnviarMensaje(id, j)
+    EnviarMensaje(p, j)
+    
+    RecibirMensaje(id, j)
+    mientras HayPapelEnLaBolsa
+      dejarPapel
+      
+    mientras HayFlorEnLaBolsa
+      dejarFlor
+    EnviarMensaje(id, j)
+    
+  fin
+  robot jugador3
+  variables 
+    f, p: numero
+    id: numero
+  comenzar
+    f := 0
+    RecibirMensaje(id, j)
+    recorrerAvenida(7, f)
+    EnviarMensaje(id, j)
+    EnviarMensaje(f, j)
+    
+    p := 0
+    RecibirMensaje(id, j)
+    recorrerCalle(7, p)
+    EnviarMensaje(id, j)
+    EnviarMensaje(p, j)
+    
+    RecibirMensaje(id, j)
+    mientras HayPapelEnLaBolsa
+      dejarPapel
+      
+    mientras HayFlorEnLaBolsa
+      dejarFlor
+    EnviarMensaje(id, j)
+    
+  fin
+  robot jefe
+  variables
+    id: numero
+    idMax, max: numero
+    hayGanador: boolean
+    ganador: numero
+  comenzar
+    enviarIDs
+    max := -1
+    repetir 3
+      RecibirMensaje(id, *)
+      procesar(id, idMax, max)
+    Informar(idMax)
+    enviarIDs
+    max := -1
+    repetir 3
+      RecibirMensaje(id, *)
+      procesar(id, idMax, max)
+    Informar(idMax)
+    hayGanador := F
+    enviarIDs
+    repetir 3
+      RecibirMensaje(id, *)
+      si ~hayGanador
+        hayGanador := V
+        ganador := id
+    Informar(ganador)
+  fin
+variables
+  r1: jugador1
+  r2: jugador2
+  r3: jugador3
+  j: jefe
+comenzar
+  AsignarArea(r1, ciudad)
+  AsignarArea(r2, ciudad)
+  AsignarArea(r3, ciudad)
+  AsignarArea(j, ciudad)
+  Iniciar(j, 1,1)
+  Iniciar(r1, 5, 4)
+  Iniciar(r2, 6, 4 )
+  Iniciar(r3, 7, 4)
+  
+fin

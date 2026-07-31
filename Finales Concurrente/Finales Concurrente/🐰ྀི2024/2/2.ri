@@ -1,0 +1,210 @@
+{Aquí tienes la transcripción completa del texto de la imagen, respetando el formato original y la puntuación:
+
+---
+
+**Final Taller de Programación - Módulo concurrente**
+**04/06/2024**
+
+Cuatro robots deben jugar a un juego de esconder objetos (flores y papeles) y encontrarlos. Hay dos equipos (Equipo FLOR y Equipo PAPEL). En cada equipo hay un robot "escondedor" y un robot "buscador". El robot "escondedor" debe depositar dos objetos (el escondedor del equipo FLOR deja dos flores, el escondedor del equipo PAPEL deja dos papeles) en dos esquinas al azar (no importa si por azar sale la misma esquina) dentro del área (1,1,5,5) (inicialmente vacía).
+
+Los buscadores deben comenzar con la búsqueda de los objetos del equipo contrario *una vez que han sido depositados* (el buscador del equipo PAPEL debe buscar las flores, el buscador del equipo FLOR debe buscar los papeles) hasta que uno de ellos encuentre lo buscado. Para ello, cada buscador elige una esquina al azar (distinta para cada uno) y se dirige a ella para ver si encuentra el objeto buscado (si lo encuentra lo toma), luego vuelve a su esquina de inicio. El juego continúa de la misma manera hasta que uno de los dos robots buscadores encuentre los dos objetos que le corresponde encontrar.
+
+Para coordinarse y conocer sobre la terminación del juego, contarán con la ayuda de un fiscalizador, quien además informará el equipo ganador.
+
+El fiscalizador comienza en (6,5).
+
+Los robots del Equipo FLOR comienzan en (6,1) y (6,2).
+Los robots del Equipo PAPEL comienzan en (6,3) y (6,4).}
+
+programa ejemplo
+procesos
+  proceso dejarPapel(E av: numero; E ca: numero)
+  variables
+    miAv, miCa: numero
+  
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    si HayPapelEnLaBolsa
+      depositarPapel
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)    
+  fin
+  proceso dejarFlor(E av: numero; E ca: numero)
+  variables
+    miAv, miCa: numero
+  
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    si HayFlorEnLaBolsa
+      depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)    
+  fin
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, buscf)
+    EnviarMensaje(2, buscp)
+  
+  fin
+  
+  proceso buscarFlor(E av: numero; E ca: numero; ES hayFlor: boolean )
+  variables
+    miAv, miCa: numero
+  
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+  
+    si HayFlorEnLaEsquina
+      tomarFlor
+      hayFlor := V
+    sino
+      hayFlor := F
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)
+  
+  
+  fin
+  
+  proceso buscarPapel(E av: numero; E ca: numero; ES hayPapel: boolean)
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    si HayPapelEnLaEsquina
+      tomarPapel
+      hayPapel := V
+    sino 
+      hayPapel := F
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)
+  
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot escondedorPapeles
+  variables
+    av,ca: numero
+  comenzar
+    repetir 2
+      Random(av, 1, 5 )
+      Random(ca, 1, 5)
+      dejarPapel(av, ca)
+    EnviarMensaje(V, buscf )  
+    
+  fin
+  
+  robot escondedorFlores
+  variables
+    av, ca: numero
+  comenzar
+    repetir 2
+      Random(av,1, 5)
+      Random(ca, 1, 5)
+      dejarFlor(av, ca)
+    EnviarMensaje(V, buscp)
+  
+  fin
+  
+  robot buscadorPapeles
+  variables
+    miAv, miCa, av, ca: numero
+    encontrado: numero
+    id: numero
+    empezar: boolean
+    hayFlor: boolean
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    encontrado := 0
+    RecibirMensaje(id, j)
+    RecibirMensaje(empezar, escf)
+    
+    mientras encontrado < 2
+      Random(av, 1, 5)
+      Random(ca, 1, 5)
+      buscarFlor(av, ca, hayFlor)
+      si hayFlor
+        encontrado := encontrado + 1
+    EnviarMensaje(id, j)
+  
+  fin
+  
+  robot buscadorFlores
+  variables
+    miAv, miCa, av, ca: numero
+    encontrado: numero
+    id: numero
+    empezar, hayPapel: boolean
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    encontrado := 0
+    RecibirMensaje(id, j)
+    RecibirMensaje(empezar, escp)
+    
+    mientras encontrado < 2
+      Random(av, 1, 5)
+      Random(ca, 1, 5)
+      buscarPapel(av, ca, hayPapel)
+      si hayPapel
+        encontrado := encontrado + 1
+    EnviarMensaje(id, j)
+  
+  
+  fin
+  
+  robot jefe
+  variables
+    id: numero
+    ganador: numero
+    hayGanador: boolean
+  comenzar
+    enviarIDs
+    hayGanador := F
+    repetir 2
+      RecibirMensaje(id, *)
+      si ~hayGanador
+        ganador := id
+    si ganador  = 1
+      Informar('Gano eq florero', 0)
+    sino
+      Informar('Gano eq papelero', 0)
+  fin
+  
+  
+  
+  
+  
+variables
+  escp: escondedorPapeles
+  escf: escondedorFlores
+  buscp: buscadorPapeles
+  buscf: buscadorFlores
+  j: jefe
+comenzar
+  AsignarArea(escp, ciudad)
+  AsignarArea(escf, ciudad)
+  AsignarArea(buscp, ciudad)
+  AsignarArea(buscf, ciudad)
+  AsignarArea(j, ciudad)
+
+  
+  Iniciar(j, 6,5)
+  Iniciar(escf, 6, 1)
+  Iniciar(buscf, 6, 2 )
+  Iniciar(escp, 6, 3)
+  Iniciar(buscp, 6, 4)
+fin

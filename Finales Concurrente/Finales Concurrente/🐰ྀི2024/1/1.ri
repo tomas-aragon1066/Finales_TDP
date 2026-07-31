@@ -1,0 +1,166 @@
+{Aquí tienes la transcripción completa del texto extraído de la imagen, respetando el formato, la puntuación y la estructura del diagrama.
+
+---
+
+**Final de Taller de Programación – Módulo Concurrente**
+**04/12/2024**
+
+Dos equipos de dos robots cada uno deben juntar todas las flores de un área asignada y depositarlas en la esquina (20,20). Cada equipo está conformado por un robot "vertical" y un robot "horizontal". El "vertical" recolecta las flores de su avenida asignada, y deposita todo lo recolectado en la última esquina del recorrido perteneciente al robot "horizontal". Este último debe recorrer su calle asignada recolectando tanto las flores que ya había en la propia calle como las depositadas por su compañero. El robot "horizontal" es el encargado de depositar (de a una) todas las flores recolectadas en (20,20).
+
+*(Diagrama del recorrido)*
+*   `robot "vertical" azul` y `robot "vertical" verde` comienzan en la **Calle 28** y bajan verticalmente hacia la **Calle 21**.
+*   El punto de encuentro entre el robot vertical y el horizontal de cada equipo ocurre en la intersección de la **Calle 21** con la avenida correspondiente.
+*   `robot "horizontal" azul` recorre su calle desde **Avenida 10** hasta **Avenida 19**, depositando finalmente en **(20,20)**.
+*   `robot "horizontal" verde` recorre su calle desde **Avenida 21** hasta **Avenida 30**, depositando finalmente en **(20,20)**.
+
+Los robots del equipo azul comienzan en (9,20) y (19,29). Los robots del equipo verde comienzan en (31,20) y (21,29).
+
+Los robots "verticales" recorren su avenida asignada desde calle 28 hasta calle 21. El robot "horizontal" azul recorre su calle desde avenida 10 a 19, mientras que el "horizontal" verde lo hace desde avenida 30 a 21.
+
+Los robots deben asegurarse de recolectar todas las flores de su área. Se debe maximizar la concurrencia.}
+
+programa ejemplo
+procesos
+  proceso colectarEsquina(ES f: numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f := f + 1
+    
+  fin
+  proceso depositarFinal(E f: numero; E av: numero; E ca: numero)
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    repetir f
+      depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(av, ca)
+  
+  fin
+  
+  proceso depositar(E f: numero)
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(20, 20)
+    Pos(20, 20)
+    repetir f
+      depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(20, 20)
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot azulver
+  variables
+    f: numero
+  comenzar
+    repetir 2
+      derecha
+    Pos(19, 28)
+    repetir 7
+      f := 0
+      colectarEsquina(f)
+      si f > 0
+        depositarFinal(f, 19, 20)
+      mover
+    
+    f := 0
+    colectarEsquina(f)
+    si f > 0
+      depositarFinal(f, 19, 20)
+      
+    EnviarMensaje(V, ha)
+  fin
+  robot verdever
+  variables
+    f: numero
+  comenzar
+    repetir 2
+      derecha
+    Pos(21, 28)
+    repetir 7
+      f := 0
+      colectarEsquina(f)
+      si f > 0
+        depositarFinal(f, 21, 20)
+      mover
+    f := 0
+    colectarEsquina(f)
+    si f > 0
+      depositarFinal(f, 21, 20)
+    EnviarMensaje(V, hv)
+  fin
+  robot azulhor
+  variables
+    f: numero
+    termine: boolean
+  comenzar
+    derecha
+    Pos(10, 20)
+    repetir 8
+      f := 0
+      colectarEsquina(f)
+      si f > 0
+        depositar(f)
+      mover
+      
+    f := 0
+    RecibirMensaje(termine, va)
+    BloquearEsquina(19, 20)
+    mover
+    colectarEsquina(f)
+    si f > 0
+      depositar(f)
+    LiberarEsquina(19, 20)
+  fin
+  
+  robot verdehor
+  variables
+    f: numero
+    termine: boolean
+  comenzar
+    repetir 3
+      derecha
+    Pos(30, 20)
+    repetir 8
+      f := 0
+      colectarEsquina(f)
+      si f > 0
+        depositar(f)
+      mover
+    f := 0
+    RecibirMensaje(termine, vv)
+    BloquearEsquina(21, 20)
+    mover
+    colectarEsquina(f)
+    si f > 0
+      depositar(f)
+    LiberarEsquina(21, 20)
+    
+  
+  fin
+variables
+  va: azulver
+  ha: azulhor
+  hv: verdehor
+  vv: verdever
+comenzar
+  AsignarArea(va, ciudad)
+  AsignarArea(ha, ciudad)
+  AsignarArea(hv, ciudad)
+  AsignarArea(vv, ciudad)
+  Iniciar(va, 19, 29)
+  Iniciar(ha, 10, 20 )
+  Iniciar(hv, 31, 20 )
+  Iniciar(vv, 21, 29)
+fin

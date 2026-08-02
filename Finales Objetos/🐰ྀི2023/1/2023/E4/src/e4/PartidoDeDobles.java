@@ -27,21 +27,28 @@ public class PartidoDeDobles extends Partido {
     @Override
     public void otorgarPremios(double premio) {
         if (this.haFinalizado()) {
-            double premio_jug;
+            
             if (this.getResultado()[0] == 3) {
-                premio_jug = (double) premio * equipo1[0].getGanados() / (equipo1[0].getGanados() + equipo1[1].getGanados());
-                // se puede simplificar el cod.
-                equipo1[0].recibirPremio(premio_jug);
-                premio_jug = (double) premio * equipo1[1].getGanados() / (equipo1[0].getGanados() + equipo1[1].getGanados());
-
-                equipo1[1].recibirPremio(premio_jug);
+                double jug_1 = equipo1[0].getGanados();
+                double jug_2 = equipo1[1].getGanados();
+                double total_ganados = jug_1 + jug_2;
+                
+                double premio_equipo = premio / total_ganados;
+                
+                equipo1[0].recibirPremio(premio_equipo * jug_1);
+                
+                equipo1[1].recibirPremio(premio_equipo  * jug_2);
             }
             else {
-                premio_jug = (double) premio * equipo2[0].getGanados() / (equipo2[0].getGanados() + equipo2[1].getGanados());
-
-                equipo2[0].recibirPremio(premio_jug);
-                premio_jug = (double) premio * equipo2[1].getGanados() / (equipo2[0].getGanados() + equipo2[1].getGanados());
-                equipo2[1].recibirPremio(premio_jug);            }
+                double jug_1 = equipo2[0].getGanados();
+                double jug_2 = equipo2[1].getGanados();
+                double total_ganados = jug_1 + jug_2 ;
+                
+                double premio_equipo = premio / total_ganados;
+                
+                equipo2[0].recibirPremio(premio_equipo * jug_1);
+                
+                equipo2[1].recibirPremio(premio_equipo  * jug_2); }
         
         }
         

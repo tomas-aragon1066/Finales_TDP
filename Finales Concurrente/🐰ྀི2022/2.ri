@@ -1,0 +1,212 @@
+{Bienvenidos al entorno CMRE.
+Lo siguiente es un código de ejemplo que implementa un
+proceso que recibe un número de avenida como parámetro,
+se posiciona en esa avenida y la recorre.}
+
+programa ejemplo
+procesos
+  proceso colectarFlores(ES f: numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        f := f + 1
+  fin
+  
+  proceso etapa1(E av: numero; ES f: numero)
+  comenzar
+    Pos(av, 5)
+    repetir 2
+      colectarFlores(f)
+      mover
+    colectarFlores(f)
+  fin
+  
+  proceso juntarPapeles(ES p: numero)
+  comenzar
+    si HayPapelEnLaEsquina
+      mientras HayPapelEnLaEsquina
+        tomarPapel
+        p := p + 1
+  
+  
+  fin
+  
+  proceso etapa2(E ca: numero; ES p: numero)
+  comenzar
+    Pos(5, ca)
+    derecha
+    repetir 2
+      juntarPapeles(p)
+      mover
+    juntarPapeles(p)
+  fin
+  
+  proceso dejarFlor
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    si HayFlorEnLaBolsa
+      depositarFlor
+    Pos(miAv, miCa)
+    LiberarEsquina(10, 10)
+  fin
+  
+  proceso dejarPapel
+  variables
+    miAv, miCa: numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    si HayPapelEnLaBolsa
+      depositarPapel
+    Pos(miAv, miCa)
+    LiberarEsquina(10, 10)
+  fin
+  
+  proceso etapa3(E f: numero; E p: numero)
+  comenzar
+    repetir f
+      dejarFlor
+    repetir p
+      dejarPapel
+  fin
+  
+  proceso enviarIDs
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+  fin
+  
+  proceso evaluar(E id: numero; ES v: numero)
+  comenzar
+    si id = 1
+      RecibirMensaje(v, r1)
+    sino
+      si id  = 2
+        RecibirMensaje(v, r2)
+      sino
+        si id = 3
+          RecibirMensaje(v, r3)
+  fin
+  
+  proceso actMaximo(E f: numero; ES max: numero; E id: numero; ES ganador: numero)
+  comenzar
+    si f > max
+      max := f
+      ganador := id
+  
+  
+  fin
+  
+  proceso continuen
+  comenzar
+    EnviarMensaje(V, r1)
+    EnviarMensaje(V, r2)
+    EnviarMensaje(V, r3)
+  
+  fin
+  
+  
+areas
+  cuadrante: AreaPC (5, 5, 7, 7)
+  deposito: AreaPC(10, 10, 10, 10)
+  a1: AreaP(5, 4, 5, 4)
+  a2: AreaP(6, 4, 6, 4)
+  a3: AreaP(7, 4, 8, 4)
+  aJefe: AreaP(1, 1, 1, 1)
+robots
+  robot jugador
+  variables
+    av, ca: numero
+    id: numero
+    seguir: boolean
+    f, p: numero
+  comenzar
+    av := PosAv
+    ca := PosCa
+    f := 0
+    RecibirMensaje(id, j)
+    etapa1(av, f)
+    EnviarMensaje(id, j)
+    EnviarMensaje(f, j)
+    
+    Pos(av, ca)
+    p := 0
+    RecibirMensaje(seguir, j)
+    etapa2(av, p)
+    EnviarMensaje(id, j)
+    EnviarMensaje(p, j)
+    
+    RecibirMensaje(seguir, j)
+    etapa3(f, p)
+    EnviarMensaje(id, j)
+    EnviarMensaje(V, j)
+  fin
+  
+  robot jefe
+  variables
+    maximoFlores,f, maximoPapeles, p: numero
+    ganador, id: numero
+    termine, hayFinalista: boolean
+  comenzar
+    enviarIDs
+    
+    ganador := -1
+    maximoFlores := -1
+    repetir 3
+      RecibirMensaje(id, *)
+      evaluar(id, f)
+      actMaximo(f, maximoFlores, id, ganador)
+    Informar(ganador)
+    
+    continuen
+    ganador := -1
+    maximoPapeles := -1
+    repetir 3
+      RecibirMensaje(id, *)
+      evaluar(id, p)
+      actMaximo(p, maximoPapeles, id, ganador)
+    Informar(ganador)
+    
+    continuen
+    
+    hayFinalista := F
+    repetir 3
+      RecibirMensaje(id, *)
+      si ~hayFinalista
+        ganador := id
+        hayFinalista := V
+    Informar(ganador)
+    
+  
+  fin
+  
+  
+  
+variables
+  r1, r2, r3: jugador
+  j: jefe
+comenzar
+  AsignarArea(r1, cuadrante)
+  AsignarArea(r2, cuadrante)
+  AsignarArea(r3, cuadrante)
+  AsignarArea(r1, deposito)
+  AsignarArea(r2, deposito)
+  AsignarArea(r3, deposito)
+  AsignarArea(r1, a1)
+  AsignarArea(r2, a2)
+  AsignarArea(r3, a3)
+  AsignarArea(j, aJefe)
+  Iniciar(r1, 5,4)
+  Iniciar(r2, 6, 4)
+  Iniciar(r3, 7, 4)
+  Iniciar(j, 1, 1)
+fin

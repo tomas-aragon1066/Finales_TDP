@@ -151,3 +151,18 @@ begin
 
 
 end.
+
+
+{Aquí tienes la transcripción del texto de la imagen:
+
+**Final Taller de Programación – Práctico - Módulo Imperativo**
+**22/08/2025**
+
+Una empresa de transportes de encomiendas desea analizar la información de las encomiendas transportadas durante 2025. De cada encomienda transportada se conoce: DNI del emisor, DNI del receptor, ciudad de destino y peso de la encomienda en gramos. Realice un programa que contenga e invoque a:
+
+a. Un módulo que lea la información de las encomiendas y retorne una estructura eficiente para buscar por ciudad de destino, que guarde para cada ciudad la *suma de los pesos* de todas las encomiendas y la *cantidad total* de encomiendas. La lectura finaliza al leer una encomienda con peso 0.
+
+b. Un módulo que reciba la estructura generada en a) y un valor X, y retorne una lista con toda la información de las ciudades cuya *cantidad total* de encomiendas recibidas sea mayor a X. La lista debe quedar ordenada por *suma de pesos*.
+
+c. Un módulo que reciba la estructura generada en a) y un nombre N, y retorne toda la información de la ciudad llamada N. Considere que el nombre de ciudad puede no existir y que no existen dos ciudades con el mismo nombre.}
+

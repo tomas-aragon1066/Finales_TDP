@@ -3,14 +3,10 @@ DoExitAsm ()
 { echo "An error occurred while assembling $1"; exit 1; }
 DoExitLink ()
 { echo "An error occurred while linking $1"; exit 1; }
-echo Assembling p1
-/usr/bin/as --64 -o 1.o   1.s
-if [ $? != 0 ]; then DoExitAsm p1; fi
-rm 1.s
-echo Linking 1
+echo Linking 2
 OFS=$IFS
 IFS="
 "
-/usr/bin/ld -b elf64-x86-64 -m elf_x86_64  --build-id    -s  -L. -o 1 -T link27662.res -e _start
-if [ $? != 0 ]; then DoExitLink 1; fi
+/usr/bin/ld.bfd -b elf64-x86-64 -m elf_x86_64     -s  -L. -o 2 -T link107716.res -e _start
+if [ $? != 0 ]; then DoExitLink 2; fi
 IFS=$OFS
